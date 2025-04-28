@@ -1,0 +1,13 @@
+.git
+.gitignore
+.gradle
+build
+!build/libs/*.jar
+data
+*.md
+.vscode
+.idea
+*.iml
+*.iws
+*.ipr
+out 

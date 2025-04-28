@@ -1,141 +1,186 @@
-# onoff heatmap assignment
+# onoff Heatmap Assignment
 
-A Spring Boot application that provides heatmap data for answer rates.
+A Spring Boot application that provides heatmap data for answer rates, exposing a secure REST endpoint backed by an in-memory H2 database.
+
+---
+
+## Table of Contents
+1. [Prerequisites](#prerequisites)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Running the Application](#running-the-application)
+   - [Using Gradle](#using-gradle)
+   - [Using Docker](#using-docker)
+5. [API Usage](#api-usage)
+6. [Testing](#testing)
+7. [Mock Data Generation](#mock-data-generation)
+8. [Notes](#notes)
+
+---
 
 ## Prerequisites
-
 - Java 17 or higher
-- Gradle
+- Gradle Wrapper (included)
+- Docker & Docker Compose (optional, for containerized deployment)
+
+---
+
+## Installation
+
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/Ahmed-aleryani/onoff-heatmap-assignment.git
+   cd onoff-heatmap-assignment
+   ```
+
+2. **Build the project**  
+   ```bash
+   ./gradlew build
+   ```
+
+---
+
+## Configuration
+
+### Authentication
+- Default Basic Auth credentials:
+  - Username: `admin`
+  - Password: `admin`
+- **Override** via environment variables or in `application-*.yml`:
+  - `HEATMAP_USER` - username
+  - `HEATMAP_PASS` - password
+
+### Spring Profiles & Datasource
+Settings live in `/src/main/resources/`:
+- `application.yml` (default) (in-memory H2)
+- `application-local.yml` (in-memory H2)
+- `application-prod.yml` (file-based H2)
+
+### Configuration Files
+
+#### Default Configuration
+- [src/main/resources/application.yml](src/main/resources/application.yml)
+
+#### Local Development Configuration
+- [src/main/resources/application-local.yml](src/main/resources/application-local.yml)
+
+#### Production Configuration
+- [src/main/resources/application-prod.yml](src/main/resources/application-prod.yml)
+
+Activate a profile:
+```bash
+./gradlew bootRun --args='--spring.profiles.active=<local|prod|delete option to use default>'
+# or
+java -jar build/libs/heatmap-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
+
+---
 
 ## Running the Application
 
-### Using Gradle Wrapper
-
+### Using Gradle
 ```bash
-# Clone the repository
-git clone https://github.com/Ahmed-aleryani/onoff-heatmap-assignment
-cd heatmap-assignment
-
-# Run the application
 ./gradlew bootRun
-```
+```  
+Application runs on `http://localhost:8080`
 
-### Building and Running the JAR
+### Using Docker
 
-```bash
-# Build the application
-./gradlew build
-
-# Run the JAR
-java -jar build/libs/heatmap-0.0.1-SNAPSHOT.jar
-```
-
-## Running Tests
+#### Development
 
 ```bash
-# Run all tests
-./gradlew test
+# Build the Docker image
+docker build -t heatmap .
 
-# Run a specific test class
-./gradlew test --tests com.onoffapp.heatmap.controller.HeatmapControllerTest
+# Run the container (foreground mode to see logs)
+docker run -p 8080:8080 heatmap
 
-# Run tests with coverage report
-./gradlew test jacocoTestReport
-
-# Skip tests during build
-./gradlew build -x test
+# Or run in background mode
+docker run -d -p 8080:8080 heatmap
 ```
 
-Test results can be found in `build/reports/tests/test/index.html`
+The application will be available at `http://localhost:8080`
 
-## Authentication
+#### Production
 
-The application uses Basic Authentication. Default credentials:
+```bash
+# Build the Docker image
+docker build -t heatmap .
 
-- Username: `admin`
-- Password: `admin`
+# Run the container with production profile
+docker run -d -p 8080:9090 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e SPRING_DATASOURCE_URL=jdbc:h2:file:./data/heatmap \
+  -e SPRING_DATASOURCE_USERNAME=sa \
+  -e SPRING_DATASOURCE_PASSWORD=password \
+  -e SPRING_H2_CONSOLE_ENABLED=true \
+  -e HEATMAP_USER=admin \
+  -e HEATMAP_PASS=admin \
+  -v $(pwd)/data:/app/data \
+  heatmap
+```
 
-You can override these defaults by setting environment variables:
-- `HEATMAP_USER` - to change the username
-- `HEATMAP_PASS` - to change the password
+Note: In production mode, the application runs on port 9090 and persists data to a local `data` directory.
 
-## API Endpoints
+---
 
-### Get Answer Rate Data
+## API Usage
 
+### Endpoint
 ```
 GET /api/heatmap/answer-rate
-```
+```  
+**Query Parameters**:
+- `dateInput` (required): `YYYY-MM-DD`
+- `numberOfShades` (required): 3–10
+- `startHour` (optional): 0–23 (default: 0)
+- `endHour` (optional): 0–23 (default: 23)
 
-Parameters:
-- `dateInput`: Date in format yyyy-MM-dd
-- `numberOfShades`: Number of shades for the heatmap
-- `startHour`: Starting hour (0-23)
-- `endHour`: Ending hour (0-23)
+**Response**: JSON array of hourly objects with fields:
+- `hour` (Integer)
+- `answeredCalls` (Integer)
+- `totalCalls` (Integer)
+- `rate` (Float, percentage)
+- `shade` (String, 1–N)
 
-### Example Curl Command
-
+### Example
 ```bash
 curl -X GET "http://localhost:8080/api/heatmap/answer-rate?dateInput=2025-04-28&numberOfShades=5&startHour=0&endHour=23" \
   -H "Accept: application/json" \
   -u "admin:admin"
 ```
 
-### Import to Postman
+---
 
-To import the curl command into Postman:
+## Testing
 
-1. In Postman, click on **Import** in the sidebar
-2. Paste the curl command above into the text box
-3. Choose one of the following options:
-   - **Import Into Collection** - to save the request in a new or existing collection
-   - **Import Without Saving** - to open as a new request without saving
-
-## Configuration
-
-### Default confiurations (application.yml)
-
-- [src/main/resources/application.yaml](src/main/resources/application.yml)
-
-### Local Development Configuration (application-local.yml)
-
-- [src/main/resources/application-local.yml](src/main/resources/application-local.yml)
-
-### Production Configuration (application-prod.yml)
-
-- [src/main/resources/application-prod.yml](src/main/resources/application-prod.yml)
-
-To use a specific profile, run the application with:
-
+Run all tests with Gradle:
 ```bash
-./gradlew bootRun --args='--spring.profiles.active=<env name local | prod or leave empty for default>'
-# or
-java -jar build/libs/heatmap-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+./gradlew test
+```  
+Generate coverage report:
+```bash
+./gradlew test jacocoTestReport
 ```
 
-## Notes
+Test reports: `build/reports/tests/test/index.html`
 
-- The application uses an H2 database which is in-memory by default for local development and file-based for production.
-- For production use, ensure to set secure credentials via environment variables and never commit them to version control.
-- The heatmap data is accessed through a RESTful API with Basic Authentication (username & password).
+---
 
 ## Mock Data Generation
 
-The application includes a Python script for generating test data:
-
-- [src/main/resources/dataGenerator.py](src/main/resources/dataGenerator.py)
-
-This script generates sample call log data for testing the heatmap functionality. It creates records with:
-- Random call durations
-- Various call statuses (ANSWER, MISSED, ERROR)
-- Different users and phone numbers
-- Timestamps across multiple days
-
-To run the script:
+A Python script generates sample call logs for 3 days:
+`src/main/resources/dataGenerator.py`
 
 ```bash
 cd src/main/resources
 python dataGenerator.py
-```
+```  
+This produces `data.sql` for populating the H2 database.
 
-The script will generate a `data.sql` file that can be used to populate the database with test data. 
+---
+
+## Notes
+- In-memory H2 is used by default for local dev.
+- Secure credentials via environment variables—never commit secrets.
+- For any issues or questions, please open an issue in the repository.

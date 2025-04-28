@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:9090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:heatmap
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_H2_CONSOLE_ENABLED=true
+      - HEATMAP_USER=admin
+      - HEATMAP_PASS=admin
+      - SPRING_DEVTOOLS_REMOTE_SECRET=mysecret
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+    volumes:
+      - ./src:/app/src
+      - ./build:/app/build
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 
