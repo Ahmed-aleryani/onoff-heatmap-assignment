@@ -44,8 +44,8 @@ class HeatmapServiceTest {
     void getAnswerRates_WithValidData_ReturnsCorrectRates() {
         // Arrange
         List<CallLog> mockLogs = Arrays.asList(
-            createCallLog("COMPLETED"),
-            createCallLog("COMPLETED"),
+            createCallLog("ANSWER"),
+            createCallLog("ANSWER"),
             createCallLog("MISSED"),
             createCallLog("ERROR")
         );
@@ -63,9 +63,9 @@ class HeatmapServiceTest {
         AnswerRateDto firstHour = result.get(0);
         assertEquals(0, firstHour.getHour(), "Hour should be 0 for first hour");
         assertEquals(2, firstHour.getAnsweredCalls(), 
-            "Should have 2 answered calls (COMPLETED status)");
+            "Should have 2 answered calls (ANSWER status)");
         assertEquals(4, firstHour.getTotalCalls(), 
-            "Should have 4 total calls (2 COMPLETED, 1 MISSED, 1 ERROR)");
+            "Should have 4 total calls (2 ANSWER, 1 MISSED, 1 ERROR)");
         assertEquals(50.0, firstHour.getRate(), 
             "Answer rate should be 50% (2 answered out of 4 total)");
         assertTrue(firstHour.getShade().startsWith("Shade"), 
@@ -100,11 +100,11 @@ class HeatmapServiceTest {
     void getAnswerRates_WithMultipleHours_ReturnsCorrectData() {
         // Arrange
         List<CallLog> hour0Logs = Arrays.asList(
-            createCallLog("COMPLETED"),
-            createCallLog("COMPLETED")
+            createCallLog("ANSWER"),
+            createCallLog("ANSWER")
         );
         List<CallLog> hour1Logs = Arrays.asList(
-            createCallLog("COMPLETED"),
+            createCallLog("ANSWER"),
             createCallLog("MISSED"),
             createCallLog("ERROR")
         );
@@ -130,7 +130,7 @@ class HeatmapServiceTest {
         AnswerRateDto hour0 = result.get(0);
         assertEquals(0, hour0.getHour(), "First entry should be hour 0");
         assertEquals(2, hour0.getAnsweredCalls(), 
-            "Hour 0 should have 2 answered calls (all COMPLETED)");
+            "Hour 0 should have 2 answered calls (all ANSWER)");
         assertEquals(2, hour0.getTotalCalls(), 
             "Hour 0 should have 2 total calls");
         assertEquals(100.0, hour0.getRate(), 
@@ -140,9 +140,9 @@ class HeatmapServiceTest {
         AnswerRateDto hour1 = result.get(1);
         assertEquals(1, hour1.getHour(), "Second entry should be hour 1");
         assertEquals(1, hour1.getAnsweredCalls(), 
-            "Hour 1 should have 1 answered call (1 COMPLETED)");
+            "Hour 1 should have 1 answered call (1 ANSWER)");
         assertEquals(3, hour1.getTotalCalls(), 
-            "Hour 1 should have 3 total calls (1 COMPLETED, 1 MISSED, 1 ERROR)");
+            "Hour 1 should have 3 total calls (1 ANSWER, 1 MISSED, 1 ERROR)");
         assertEquals(33.33, hour1.getRate(), 0.01, 
             "Hour 1 should have ~33.33% answer rate (1 answered out of 3)");
     }

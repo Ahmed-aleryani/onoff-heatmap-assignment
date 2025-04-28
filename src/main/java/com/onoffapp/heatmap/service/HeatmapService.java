@@ -30,7 +30,7 @@ public class HeatmapService {
                     LocalDateTime hEnd = date.atTime(hour, 59, 59);
                     long total = repo.findAllByStartedAtBetween(hStart, hEnd).size();
                     long answered = repo.findAllByStartedAtBetween(hStart, hEnd).stream()
-                            .filter(c -> "COMPLETED".equals(c.getStatus()))
+                            .filter(c -> "ANSWER".equals(c.getStatus()))
                             .count();
                     double rate = total == 0 ? 0.0 : (answered * 100.0 / total);
                     int shadeNum = ShadeCalculator.calculateShade(rate, numberOfShades);
