@@ -12,17 +12,17 @@ CREATE TABLE IF NOT EXISTS CALL_LOG (
     ENDED_AT       TIMESTAMP(3)
     );
 
--- Index to speed /heatmap api lookups by started_at
-CREATE INDEX idx_call_log_started_at
-    ON CALL_LOG(STARTED_AT);
+CREATE INDEX idx_call_log_started_at_status
+    ON CALL_LOG(STARTED_AT, STATUS);
 
--- Index to speed /heatmap api lookups by ended_at
-CREATE INDEX idx_call_log_ended_at
-    ON CALL_LOG(ENDED_AT);
-
--- single-column index to speed up status filtering/counting
 CREATE INDEX idx_call_log_status
     ON CALL_LOG(STATUS);
 
-CREATE INDEX idx_call_log_status_started_at_and_ended_at
-    ON CALL_LOG(STATUS, STARTED_AT, ENDED_AT);
+CREATE INDEX idx_call_log_ended_at_status
+    ON CALL_LOG(ENDED_AT, STATUS);
+
+-- In case we need to filter by user_id
+CREATE INDEX idx_call_log_user_id
+    ON CALL_LOG(USER_ID);
+
+    
