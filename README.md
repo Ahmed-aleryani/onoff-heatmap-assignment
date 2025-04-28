@@ -30,6 +30,24 @@ cd heatmap-assignment
 java -jar build/libs/heatmap-0.0.1-SNAPSHOT.jar
 ```
 
+## Running Tests
+
+```bash
+# Run all tests
+./gradlew test
+
+# Run a specific test class
+./gradlew test --tests com.onoffapp.heatmap.controller.HeatmapControllerTest
+
+# Run tests with coverage report
+./gradlew test jacocoTestReport
+
+# Skip tests during build
+./gradlew build -x test
+```
+
+Test results can be found in `build/reports/tests/test/index.html`
+
 ## Authentication
 
 The application uses Basic Authentication. Default credentials:
@@ -75,7 +93,7 @@ To import the curl command into Postman:
 
 ## Configuration
 
-### Default confiurations (application.yml) 
+### Default confiurations (application.yml)
 
 - [src/main/resources/application.yaml](src/main/resources/application.yml)
 
@@ -99,4 +117,25 @@ java -jar build/libs/heatmap-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 
 - The application uses an H2 database which is in-memory by default for local development and file-based for production.
 - For production use, ensure to set secure credentials via environment variables and never commit them to version control.
-- The heatmap data is accessed through a RESTful API with Basic Authentication. 
+- The heatmap data is accessed through a RESTful API with Basic Authentication (username & password).
+
+## Mock Data Generation
+
+The application includes a Python script for generating test data:
+
+- [src/main/resources/dataGenerator.py](src/main/resources/dataGenerator.py)
+
+This script generates sample call log data for testing the heatmap functionality. It creates records with:
+- Random call durations
+- Various call statuses (ANSWER, MISSED, ERROR)
+- Different users and phone numbers
+- Timestamps across multiple days
+
+To run the script:
+
+```bash
+cd src/main/resources
+python dataGenerator.py
+```
+
+The script will generate a `data.sql` file that can be used to populate the database with test data. 
