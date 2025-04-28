@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+spring:
+  application:
+    name: heatmap
+  datasource:
+    url: jdbc:h2:mem:heatmap;DB_CLOSE_DELAY=-1;MODE=MYSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: embedded
+  security:
+    user:
+      name: admin
+      password: secret
+  mvc:
+    throw-exception-if-no-handler-found: true 

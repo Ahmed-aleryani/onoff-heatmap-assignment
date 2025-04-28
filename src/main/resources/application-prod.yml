@@ -1,0 +1,25 @@
+server:
+  port: 9090
+  error:
+    include-message: always
+    include-binding-errors: never
+    include-stacktrace: never
+spring:
+  application:
+    name: heatmap
+  datasource:
+    url: jdbc:h2:file:/data/heatmap
+    driver-class-name: org.h2.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    defer-datasource-initialization: false
+  security:
+    user:
+      name: ${HEATMAP_USER}
+      password: ${HEATMAP_PASS}
+  mvc:
+    throw-exception-if-no-handler-found: true 

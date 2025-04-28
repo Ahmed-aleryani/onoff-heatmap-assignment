@@ -1,5 +1,9 @@
 server:
   port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
 spring:
   application:
     name: heatmap
@@ -11,7 +15,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    show-sql: false
     defer-datasource-initialization: true
   sql:
     init:
@@ -19,4 +23,6 @@ spring:
   security:
     user:
       name: ${HEATMAP_USER:admin}
-      password: ${HEATMAP_PASS:secret}
+      password: ${HEATMAP_PASS:admin}
+  mvc:
+    throw-exception-if-no-handler-found: true
