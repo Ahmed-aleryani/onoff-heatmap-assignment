@@ -13,7 +13,7 @@ hours = list(range(24))
 usernames = ['alice', 'bob', 'carol', 'dave', 'eve']
 onoff_numbers = ['100-000-0000', '200-000-0000', '300-000-0000', '400-000-0000', '500-000-0000']
 contact_numbers = ['600-000-0000', '700-000-0000', '800-000-0000', '900-000-0000', '000-000-0000']
-statuses = ['COMPLETED', 'FAILED', 'MISSED', 'CANCELLED']
+statuses = ['ANSWER', 'MISSED', 'ERROR']
 incoming_flags = [0, 1]
 
 # Generate data.sql
